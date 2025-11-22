@@ -1,4 +1,5 @@
 import UIKit
+import QuartzCore
 
 // Placeholder for Phase 5
 class BoundingBoxOverlay: CALayer {
