@@ -9,24 +9,38 @@ struct ContentView: View {
             // Background color for when camera is not available
             Color.black.edgesIgnoringSafeArea(.all)
 
-            // Camera preview (only when authorized)
-            if viewModel.cameraPermissionStatus == .authorized {
-                CameraPreview(viewModel: viewModel)
+            if viewModel.isDemoMode {
+                // Demo mode: show static image
+                DemoImageView(viewModel: viewModel)
                     .edgesIgnoringSafeArea(.all)
+            } else {
+                // Camera preview (only when authorized)
+                if viewModel.cameraPermissionStatus == .authorized {
+                    CameraPreview(viewModel: viewModel)
+                        .edgesIgnoringSafeArea(.all)
+                }
+
+                // Permission denied overlay
+                if viewModel.cameraPermissionStatus == .denied || viewModel.cameraPermissionStatus == .restricted {
+                    permissionDeniedView
+                }
             }
 
-            // Permission denied overlay
-            if viewModel.cameraPermissionStatus == .denied || viewModel.cameraPermissionStatus == .restricted {
-                permissionDeniedView
-            }
-
-            // Main UI overlay
-            if viewModel.cameraPermissionStatus == .authorized {
+            // Main UI overlay (show in both demo and camera mode when appropriate)
+            if viewModel.isDemoMode || viewModel.cameraPermissionStatus == .authorized {
                 mainUIOverlay
             }
+
+            // Demo mode button (always visible)
+            demoModeButton
         }
         .onAppear {
+            // Auto-enable demo mode on simulator (no camera)
+            #if targetEnvironment(simulator)
+            viewModel.enableDemoMode()
+            #else
             viewModel.startCamera()
+            #endif
         }
         .onDisappear {
             viewModel.stopCamera()
@@ -133,6 +147,35 @@ struct ContentView: View {
     private func openSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsURL)
+        }
+    }
+
+    private var demoModeButton: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Button(action: {
+                    if viewModel.isDemoMode {
+                        viewModel.disableDemoMode()
+                    } else {
+                        viewModel.enableDemoMode()
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: viewModel.isDemoMode ? "camera.fill" : "photo.fill")
+                        Text(viewModel.isDemoMode ? "Camera" : "Demo")
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(viewModel.isDemoMode ? Color.blue.opacity(0.8) : Color.purple.opacity(0.8))
+                    .cornerRadius(20)
+                }
+                .padding(.trailing, 20)
+                .padding(.bottom, 100)
+            }
         }
     }
 }

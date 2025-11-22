@@ -4,11 +4,15 @@ class BoundingBoxOverlay: CALayer {
     private var boxLayers: [CAShapeLayer] = []
 
     func drawBoundingBoxes(for matches: [TextResult], in viewSize: CGSize) {
+        drawBoundingBoxes(for: matches, in: viewSize, offset: .zero)
+    }
+
+    func drawBoundingBoxes(for matches: [TextResult], in viewSize: CGSize, offset: CGPoint) {
         // Remove previous boxes
         clearBoxes()
 
         for match in matches {
-            let boxLayer = createGreenBox(for: match.boundingBox, in: viewSize)
+            let boxLayer = createGreenBox(for: match.boundingBox, in: viewSize, offset: offset)
             addSublayer(boxLayer)
             boxLayers.append(boxLayer)
         }
@@ -20,9 +24,10 @@ class BoundingBoxOverlay: CALayer {
     }
 
     private func createGreenBox(for normalizedRect: CGRect,
-                                in viewSize: CGSize) -> CAShapeLayer {
+                                in viewSize: CGSize,
+                                offset: CGPoint = .zero) -> CAShapeLayer {
         // Convert Vision coordinates to UIKit coordinates
-        let convertedRect = convertToViewCoordinates(normalizedRect, viewSize: viewSize)
+        let convertedRect = convertToViewCoordinates(normalizedRect, viewSize: viewSize, offset: offset)
 
         let boxLayer = CAShapeLayer()
         boxLayer.frame = convertedRect
@@ -35,12 +40,13 @@ class BoundingBoxOverlay: CALayer {
     }
 
     private func convertToViewCoordinates(_ visionRect: CGRect,
-                                          viewSize: CGSize) -> CGRect {
+                                          viewSize: CGSize,
+                                          offset: CGPoint = .zero) -> CGRect {
         // Vision framework: origin at bottom-left, normalized (0-1)
         // UIKit: origin at top-left, pixels
 
-        let x = visionRect.origin.x * viewSize.width
-        let y = (1 - visionRect.origin.y - visionRect.height) * viewSize.height
+        let x = visionRect.origin.x * viewSize.width + offset.x
+        let y = (1 - visionRect.origin.y - visionRect.height) * viewSize.height + offset.y
         let width = visionRect.width * viewSize.width
         let height = visionRect.height * viewSize.height
 

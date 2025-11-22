@@ -32,6 +32,17 @@ class OCRProcessor {
         }
     }
 
+    func recognizeText(in cgImage: CGImage) {
+        let handler = VNImageRequestHandler(cgImage: cgImage,
+                                            orientation: .up,
+                                            options: [:])
+        do {
+            try handler.perform([recognizeTextRequest])
+        } catch {
+            print("OCR error: \(error)")
+        }
+    }
+
     private func handleOCRResults(request: VNRequest, error: Error?) {
         guard let observations = request.results as? [VNRecognizedTextObservation] else {
             return
