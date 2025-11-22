@@ -2,6 +2,13 @@ import Foundation
 import AVFoundation
 import Combine
 
+enum CameraPermissionStatus {
+    case notDetermined
+    case authorized
+    case denied
+    case restricted
+}
+
 class TextSearchViewModel: ObservableObject {
     private let cameraManager = CameraManager()
     private let ocrProcessor = OCRProcessor()
@@ -13,6 +20,7 @@ class TextSearchViewModel: ObservableObject {
             searchMatcher.searchQuery = searchQuery
         }
     }
+    @Published var cameraPermissionStatus: CameraPermissionStatus = .notDetermined
 
     var previewLayer: AVCaptureVideoPreviewLayer? {
         cameraManager.previewLayer
@@ -26,6 +34,22 @@ class TextSearchViewModel: ObservableObject {
 
     init() {
         setupCallbacks()
+        checkCameraPermission()
+    }
+
+    private func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .notDetermined:
+            cameraPermissionStatus = .notDetermined
+        case .authorized:
+            cameraPermissionStatus = .authorized
+        case .denied:
+            cameraPermissionStatus = .denied
+        case .restricted:
+            cameraPermissionStatus = .restricted
+        @unknown default:
+            cameraPermissionStatus = .notDetermined
+        }
     }
 
     private func setupCallbacks() {
@@ -51,7 +75,30 @@ class TextSearchViewModel: ObservableObject {
         }
     }
 
+    func requestCameraPermission() {
+        AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+            DispatchQueue.main.async {
+                self?.cameraPermissionStatus = granted ? .authorized : .denied
+                if granted {
+                    self?.startCameraSession()
+                }
+            }
+        }
+    }
+
     func startCamera() {
+        switch cameraPermissionStatus {
+        case .notDetermined:
+            requestCameraPermission()
+        case .authorized:
+            startCameraSession()
+        case .denied, .restricted:
+            // Permission denied - UI will show appropriate message
+            break
+        }
+    }
+
+    private func startCameraSession() {
         cameraManager.setupCamera()
         cameraManager.startSession()
     }
