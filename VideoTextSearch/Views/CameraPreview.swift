@@ -24,10 +24,29 @@ struct CameraPreview: UIViewRepresentable {
         viewModel.previewLayer?.frame = uiView.bounds
         viewModel.boundingBoxOverlay.frame = uiView.bounds
 
+        // Calculate the video rect within the preview layer
+        // The preview layer uses .resizeAspectFill, so we need to account for cropping
+        let videoRect = calculateVideoRect(in: uiView.bounds)
+
         // Update bounding boxes when matches change
         viewModel.boundingBoxOverlay.drawBoundingBoxes(
             for: viewModel.matchedTexts,
-            in: uiView.bounds.size
+            in: videoRect.size,
+            offset: videoRect.origin
         )
+    }
+
+    private func calculateVideoRect(in bounds: CGRect) -> CGRect {
+        // For .resizeAspectFill, the video fills the entire bounds
+        // but may extend beyond the edges (cropped)
+        // For OCR purposes, we need to match the visible area
+
+        guard let previewLayer = viewModel.previewLayer else {
+            return bounds
+        }
+
+        // Get the actual video dimensions from the preview layer
+        // This accounts for aspect fill behavior
+        return previewLayer.layerRectConverted(fromMetadataOutputRect: CGRect(x: 0, y: 0, width: 1, height: 1))
     }
 }
