@@ -35,12 +35,7 @@ struct ContentView: View {
             demoModeButton
         }
         .onAppear {
-            // Auto-enable demo mode on simulator (no camera)
-            #if targetEnvironment(simulator)
-            viewModel.enableDemoMode()
-            #else
-            viewModel.startCamera()
-            #endif
+            viewModel.startWithDemoMode()
         }
         .onDisappear {
             viewModel.stopCamera()
