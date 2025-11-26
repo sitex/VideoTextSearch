@@ -22,8 +22,10 @@ class OCRProcessor {
     }
 
     func recognizeText(in pixelBuffer: CVPixelBuffer) {
+        // Use .up since CameraManager sets videoOrientation to .portrait
+        // The pixel buffer is already delivered in portrait orientation
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
-                                            orientation: .right,
+                                            orientation: .up,
                                             options: [:])
         do {
             try handler.perform([recognizeTextRequest])
