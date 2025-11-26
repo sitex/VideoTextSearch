@@ -20,10 +20,8 @@ class TextSearchViewModel: ObservableObject {
     @Published var searchQuery: String = "" {
         didSet {
             searchMatcher.searchQuery = searchQuery
-            // In demo mode, re-filter when search changes
-            if isDemoMode {
-                matchedTexts = searchMatcher.findMatches(in: allRecognizedTexts)
-            }
+            // Re-filter existing results when search changes (both demo and camera mode)
+            matchedTexts = searchMatcher.findMatches(in: allRecognizedTexts)
         }
     }
     @Published var cameraPermissionStatus: CameraPermissionStatus = .notDetermined
