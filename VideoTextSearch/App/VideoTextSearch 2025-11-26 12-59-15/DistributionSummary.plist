@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>VideoTextSearch.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>buildNumber</key>
+			<string>1</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>FF9F76A647161DB7A760F1B79B1AADF3CF263B4C</string>
+				<key>dateExpires</key>
+				<string>11/26/26</string>
+				<key>type</key>
+				<string>Cloud Managed Apple Distribution</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>RN7338LJV7.com.videotextsearch.app</string>
+				<key>beta-reports-active</key>
+				<true/>
+				<key>com.apple.developer.team-identifier</key>
+				<string>RN7338LJV7</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>VideoTextSearch.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>3f5cfbd7-0908-485f-a8b3-277a1af6dfba</string>
+				<key>dateExpires</key>
+				<string>11/26/26</string>
+				<key>name</key>
+				<string>iOS Team Store Provisioning Profile: com.videotextsearch.app</string>
+			</dict>
+			<key>symbols</key>
+			<true/>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>RN7338LJV7</string>
+				<key>name</key>
+				<string>Ivan Samorodov</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>1.0</string>
+		</dict>
+	</array>
+</dict>
+</plist>
