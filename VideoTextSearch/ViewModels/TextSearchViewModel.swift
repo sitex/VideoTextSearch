@@ -25,7 +25,7 @@ class TextSearchViewModel: ObservableObject {
         }
     }
     @Published var cameraPermissionStatus: CameraPermissionStatus = .notDetermined
-    @Published var isDemoMode: Bool = false
+    @Published var isDemoMode: Bool = true
     @Published var demoImage: UIImage?
 
     var previewLayer: AVCaptureVideoPreviewLayer? {
@@ -87,7 +87,7 @@ class TextSearchViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self?.cameraPermissionStatus = granted ? .authorized : .denied
                 if granted {
-                    self?.startCameraSession()
+                    self?.disableDemoMode() // This will set isDemoMode = false and start camera
                 }
             }
         }
@@ -103,6 +103,25 @@ class TextSearchViewModel: ObservableObject {
             // Permission denied - UI will show appropriate message
             break
         }
+    }
+
+    func startWithDemoMode() {
+        // Ensure demo mode is active and loaded
+        if !isDemoMode {
+            enableDemoMode()
+        } else if demoImage == nil {
+            loadDemoImage()
+        }
+
+        // Request camera permission in background (non-blocking)
+        // If granted, disableDemoMode() will be called automatically
+        if cameraPermissionStatus == .notDetermined {
+            requestCameraPermission()
+        } else if cameraPermissionStatus == .authorized {
+            // Already have permission, switch to camera
+            disableDemoMode()
+        }
+        // If denied/restricted, stay in demo mode
     }
 
     private func startCameraSession() {
